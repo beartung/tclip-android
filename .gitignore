@@ -1,0 +1,17 @@
+*~
+build
+gen
+bin
+local.properties
+*.apk
+.*.swp
+/.classpath
+/.project
+target
+*DS_Store
+*.iml
+out
+.idea
+project.properties
+classes
+.gradle

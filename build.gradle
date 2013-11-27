@@ -1,0 +1,71 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.6.+'
+    }
+}
+
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+android {
+
+    compileSdkVersion 17
+    buildToolsVersion '17'
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 17
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            aidl.srcDirs = ['src']
+        }
+    }
+
+    buildTypes {
+        debug {
+            packageNameSuffix ".debug"
+        }
+
+    }
+
+    aaptOptions {
+        ignoreAssetsPattern "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+
+    task nativeLibsToJar(type: Zip, description: 'create a jar archive of the native libs') {
+        destinationDir file("libs")
+        baseName 'tclip'
+        extension 'jar'
+        from fileTree(dir: 'libs', include: '**/*.so')
+        into 'lib/'
+    }
+
+
+    tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
+        pkgTask -> pkgTask.jniDir new File(projectDir, 'libs')
+    }
+
+
+    tasks.withType(Compile) {
+        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+            options.encoding = "UTF-8"
+    }
+}
+
+
+
