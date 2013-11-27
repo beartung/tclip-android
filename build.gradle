@@ -40,32 +40,17 @@ android {
         debug {
             packageNameSuffix ".debug"
         }
-
     }
 
     aaptOptions {
         ignoreAssetsPattern "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
     }
 
-    task nativeLibsToJar(type: Zip, description: 'create a jar archive of the native libs') {
-        destinationDir file("libs")
-        baseName 'tclip'
-        extension 'jar'
-        from fileTree(dir: 'libs', include: '**/*.so')
-        into 'lib/'
-    }
-
-
     tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
         pkgTask -> pkgTask.jniDir new File(projectDir, 'libs')
     }
 
-
     tasks.withType(Compile) {
-        compileTask -> compileTask.dependsOn(nativeLibsToJar)
-            options.encoding = "UTF-8"
+        options.encoding = "UTF-8"
     }
 }
-
-
-

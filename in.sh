@@ -1,2 +1,2 @@
 #!/bin/bash
-gradle build; adb install -r build/apk/xpaper-debug-unaligned.apk; adb shell am start -n com.bear.xpaper.debug/com.bear.xpaper.app.Welcome
+gradle build; adb install -r build/apk/tclip-android-debug-unaligned.apk; adb shell am start -n com.demo.tclip.debug/com.demo.tclip.Demo
