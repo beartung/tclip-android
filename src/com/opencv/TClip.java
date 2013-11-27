@@ -14,30 +14,52 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.objdetect.Objdetect;
 
 public class TClip {
 
     private static final String TAG = "TClipJAVA";
 
-    public static void init(Context context){
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_7, context, new BaseLoaderCallback(context){
+    private static final String CONFIG = "/sdcard/haarcascade_frontalface_alt.xml";
 
-            public void onManagerConnected(int status) {
+    public static int detectFace(Mat mat){
 
-                switch (status) {
-                    case LoaderCallbackInterface.SUCCESS:
-                        Log.i(TAG, "OpenCV loaded successfully");
-                        break;
-                    default:
-                        super.onManagerConnected(status);
-                        break;
+	    CascadeClassifier faceCascade = new CascadeClassifier(CONFIG);
+	    
+        MatOfRect faceRects = new MatOfRect();
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.equalizeHist(mat, mat);
+        faceCascade.detectMultiScale(mat, faceRects, 1.1, 2, 0|Objdetect.CASCADE_SCALE_IMAGE,
+                new Size(30, 30), new Size(100, 100));
 
-                }
+        Rect [] faces = faceRects.toArray();
+        int faceSize = faces.length;
+	    int Y;
+
+        if (faceSize > 0){
+            Log.d(TAG, "detectFace:faceSize is " + faceSize);
+            Log.d(TAG, "detectFace:faces[0].y is " + faces[0].y);
+            Log.d(TAG, "detectFace:faces[0].height is " + faces[0].height);
+            Log.d(TAG, "detectFace:faces[0].width is " + faces[0].width);
+            Log.d(TAG, "detectFace:faces[face_size - 1].y is " + faces[faceSize - 1].y);
+            Log.d(TAG, "detectFace:faces[face_size - 1].height is " + faces[faceSize - 1].height);
+            Log.d(TAG, "detectFace:faces[face_size - 1].width is " + faces[faceSize - 1].height);
+            Y = faces[faceSize - 1].y - faces[faceSize - 1].height / 2;
+            //fix
+            if ( Y > mat.size().height / 2 ){
+                return -1;
+            }else{
+                return Y < 0 ? 0 : Y;
             }
-
-        });
+        }else{
+            return -1;
+        }
     }
 
     public static Bitmap gray(Bitmap src){
@@ -54,7 +76,10 @@ public class TClip {
             //Bitmap copy = src.copy(Bitmap.Config.ARGB_8888, true);
             //Utils.bitmapToMat(copy, mat);
 
-            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY, 4);
+            //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY, 4);
+
+            int y = detectFace(mat);
+            Log.d(TAG, "detectFace y " + y);
 
             ret = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(mat, ret);
