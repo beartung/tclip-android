@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    compile files('./libs/opencv-2.4.7.jar')
 }
 
 android {
