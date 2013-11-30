@@ -23,6 +23,16 @@ JNIEXPORT static void JNICALL crop_test(JNIEnv * env, jclass cls){
     LOGI("C: crop_test");
 }
 
+/*
+ * Class:     com_opencv_TClip
+ * Method:    crop
+ * Signature: ()V;
+ */
+JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
+        jobject bitmap_src, jobject bitmap_dst, int width, int height){
+    LOGI("C: crop");
+    //bitmap_dst = bitmap_src;
+}
 
 #define JNIREG_CLASS "com/opencv/TClip"
 
@@ -31,14 +41,14 @@ JNIEXPORT static void JNICALL crop_test(JNIEnv * env, jclass cls){
 */
 static JNINativeMethod gMethods[] = {
     { "crop_test", "()V", (void*)crop_test},
+    { "crop", "(Landroid/graphics/Bitmap;Landroid/graphics/Bitmap;II)V", (void*)crop},
 };
 
 /*
 * Register several native methods for one class.
 */
 static int registerNativeMethods(JNIEnv* env, const char* className,
-        JNINativeMethod* gMethods, int numMethods)
-{
+        JNINativeMethod* gMethods, int numMethods){
 
     jclass clazz;
     clazz = (*env)->FindClass(env, className);
@@ -55,8 +65,7 @@ static int registerNativeMethods(JNIEnv* env, const char* className,
 /*
 * Register native methods for all classes we know about.
 */
-static int registerNatives(JNIEnv* env)
-{
+static int registerNatives(JNIEnv* env){
 
     if (!registerNativeMethods(env, JNIREG_CLASS, gMethods,
                                  sizeof(gMethods) / sizeof(gMethods[0])))
@@ -65,8 +74,7 @@ static int registerNatives(JNIEnv* env)
     return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
-{
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved){
     JNIEnv* env = NULL;
     jint result = -1;
 

@@ -17,10 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-
 public class Demo extends Activity {
 
     private static final String TAG = "Demo";
@@ -34,32 +30,14 @@ public class Demo extends Activity {
         img = (ImageView)findViewById(R.id.img);
     }
 
-    private BaseLoaderCallback callback = new BaseLoaderCallback(this){
-
-        public void onManagerConnected(int status) {
-
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                    Log.i(TAG, "OpenCV loaded successfully");
-                    Bitmap src = getPic();
-                    Bitmap gray = TClip.gray(src);
-                    img.setImageBitmap(gray);
-                    src.recycle();
-                    break;
-                default:
-                    super.onManagerConnected(status);
-                    break;
-
-            }
-        }
-
-    };
-
     public void onResume(){
         super.onResume(); 
         TClip.crop_test();
 
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_7, this, callback);
+        Bitmap pic = getPic();
+        Bitmap cropped = TClip.crop(pic, 200, 100);
+        img.setImageBitmap(cropped);
+
     }
 
     private Bitmap getPic(){
