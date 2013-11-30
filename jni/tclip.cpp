@@ -1,4 +1,5 @@
 #include "cv.h"  
+#include "tclip.h"  
 #include "opencv2/core/core.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/highgui/highgui.hpp"

@@ -13,8 +13,9 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 include $(OPENCV_PACKAGE_DIR)/sdk/native/jni/OpenCV.mk
 
-LOCAL_SRC_FILES  := jtclip.c tclip.cpp
+LOCAL_SRC_FILES  := jtclip.cpp tclip.cpp
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_LDFLAGS    += -ljnigraphics
 LOCAL_LDLIBS     += -llog -ldl
 
 LOCAL_SHARED_LIBRARIES := sift_prebuilt opencv_java_prebuilt
