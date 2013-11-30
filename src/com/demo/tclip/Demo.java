@@ -63,7 +63,8 @@ public class Demo extends Activity {
     }
 
     private Bitmap getPic(){
-        File f = new File("/sdcard/a1.jpg"); 
+        //File f = new File("/sdcard/a1.jpg"); 
+        File f = new File("/sdcard/b1.jpg"); 
         Bitmap ret = null;
         try {
             InputStream stream = new FileInputStream(f);
