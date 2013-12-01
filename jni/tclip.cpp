@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include "cv.h"  
 #include "tclip.h"  
 #include "opencv2/core/core.hpp"
@@ -21,8 +23,6 @@ bool debug = false;
 clock_t start;
 clock_t clt;
 
-#define show_debug(tip,message) if(debug){ cout << tip << message << endl;}
-
 int detectFace( Mat img , string face_cascade_name){
 	CascadeClassifier face_cascade;
 	std::vector<Rect> faces;
@@ -33,28 +33,28 @@ int detectFace( Mat img , string face_cascade_name){
 	start = clock();
 
 	if( !face_cascade.load( face_cascade_name ) ){ 
-        printf("[error] can not load classifier file！[use -H for help]\n");
+        LOGE("[error] can not load classifier file！[use -H for help]\n");
         return -1; 
     }
 
 	clt = clock() - start;
-	show_debug("read face config cost time ", (double)clt/CLOCKS_PER_SEC);
+	LOGD("read face config cost time %g", (double)clt/CLOCKS_PER_SEC);
 
     cvtColor( img, img_gray, CV_BGR2GRAY );
     equalizeHist( img_gray, img_gray );
     face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30) );
 	face_size = faces.size();
 	
-	show_debug("detectFace:face size is ", face_size);
+	LOGD("detectFace:face size is %d", face_size);
 	
 	if ( face_size > 0)
 	{
-		show_debug("detectFace:faces[0].y is ", faces[0].y);
-		show_debug("detectFace:faces[0].height is ", faces[0].height);
-		show_debug("detectFace:faces[0].width is ", faces[0].width);
-		show_debug("detectFace:faces[face_size -1].y is ", faces[face_size -1].y);
-		show_debug("detectFace:faces[face_size -1].height is ", faces[face_size -1].height);
-		show_debug("detectFace:faces[face_size -1].width is ", faces[face_size -1].height);
+		LOGD("detectFace:faces[0].y is %d", faces[0].y);
+		LOGD("detectFace:faces[0].height is %d", faces[0].height);
+		LOGD("detectFace:faces[0].width is %d", faces[0].width);
+		LOGD("detectFace:faces[face_size -1].y is %d", faces[face_size -1].y);
+		LOGD("detectFace:faces[face_size -1].height is %d", faces[face_size -1].height);
+		LOGD("detectFace:faces[face_size -1].width is %d", faces[face_size -1].height);
 		Y = faces[face_size -1].y - faces[face_size -1].height / 2;
 		if ( Y > img.size().height / 2 ) //fix
 		{
@@ -87,7 +87,7 @@ int detectCharacter( Mat img ){
 
 	if( detector.empty())
 	{
-		cout << "Can not create detector or descriptor exstractor or descriptor matcher of given types" << endl;
+		LOGD("Can not create detector or descriptor exstractor or descriptor matcher of given types");
 		return -1;
 	}
 
@@ -110,10 +110,10 @@ int detectCharacter( Mat img ){
 
 	for (map<int,int>::iterator i = section_num.begin(); i != section_num.end(); i++)
 	{
-		show_debug(i->first, i->second);
+		LOGD("sectionnum %d : %d", i->first, i->second);
 	}
 
-	show_debug("detectCharacter:avg is ", avg);
+	LOGD("detectCharacter:avg is %d", avg);
 
 	//检测特征点分布是否均匀
 	int slice_total = 10 ; 
@@ -159,13 +159,9 @@ int detectCharacter( Mat img ){
 	return Y * 10;
 }
 
-int test(int argc, char** argv)
+int clip(Mat image, Mat dest_image, int dest_width, int dest_height)
 {
-	Mat image;
-	Mat dest_image;
 	Size tmp_size;
-	int dest_width = 300;//用户输入
-	int dest_height = 180;//用户输入
 	float ratio_width = 0;
 	float ratio_height = 0;
 	float ratio = 0;
@@ -173,75 +169,25 @@ int test(int argc, char** argv)
 	int clip_bottom = 0;
 	int clip_left = 0;
 	int clip_right = 0;
-	string config_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
-	string source_path = "";
-	string dest_path = "";
+	//string config_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
+	string config_path = "/sdcard/haarcascade_frontalface_alt.xml";
 	int result = 0;
 	int param;
 
-	while( (param = getopt(argc, argv, "Hms:d:c:w:h:")) != -1 )
-	{
-		if ( param == 's' ){
-			source_path = optarg;
-		} else if ( param == 'd' ) {
-			dest_path = optarg;
-		} else if ( param == 'm' ) {
-			debug = true;
-		}else if ( param == 'c' ) {
-			config_path = optarg;
-		}else if ( param == 'w' ) {
-			sscanf (optarg, "%d", &dest_width);
-		}else if ( param == 'h' ) {
-			sscanf (optarg, "%d", &dest_height);
-		}else if ( param == 'H')
-		{
-			cout << "Usage: exclip [options] [-s] <source_file> [--] [args...]" << endl;
-			cout << "-s<path>	the path of source file" << endl;
-			cout << "-d<path>	the path of destination file" << endl;
-			cout << "-w<int>		the width of destination file. default value is 300" << endl;
-			cout << "-h<int>		the height of destination file. default value is 180" << endl;
-			cout << "-c<path>	the path of config file." << endl;
-			cout << "		default path is /usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml" << endl;
-			cout << "-m		open debug model" << endl;
-			return 0;
-		}
-	}
-
-	if ( source_path == "" )
-	{
-		cerr << "you should specify the path of source file.[use -H for help]" << endl;
-		return 1;
-	}
-	if ( dest_path == "" )
-	{
-		cerr << "you should specify the path of destination file.[use -H for help]" << endl;
-		return 1;
-	}
-	
-	show_debug("start to read image ", "");
+	LOGD("start to read image ", "");
 	start = clock();
 
-    image = imread( source_path );
-    if( !image.data ){
-        printf("[error] do not load pic \n");
-        return 1;
-    }
-
-	clt = clock() - start;
-	show_debug("read image cost time ", (double)clt/CLOCKS_PER_SEC);
-
-
-	show_debug("start to resize ", "");
-	show_debug("width of dest image ", dest_width);
-	show_debug("height of dest image ", dest_height);
-	show_debug("width of origin image ", image.size().width);
-	show_debug("height of origin image ", image.size().height);
+	LOGD("start to resize");
+	LOGD("width of dest image %d", dest_width);
+	LOGD("height of dest image %d", dest_height);
+	LOGD("width of origin image %d", image.size().width);
+	LOGD("height of origin image %d", image.size().height);
 
 	if (image.size().width * 3 <= image.size().height)
 	{
-		show_debug("type is 1 ", "");
+		LOGD("type is 1");
 		ratio = (float)dest_width / image.size().width;
-		show_debug("ratio is ", ratio);
+		LOGD("ratio is %f", ratio);
 		tmp_size = Size((int)(image.size().width * ratio), (int)(image.size().height * ratio));
 		dest_image = Mat(tmp_size, CV_32S);
 		resize(image, dest_image, tmp_size);
@@ -250,48 +196,47 @@ int test(int argc, char** argv)
 		clip_left = 0;
 		clip_right = 0;
 		dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
-		imwrite(dest_path, dest_image);
 		return -1;
 	}
 
 	ratio = (float)300.0 / image.size().width;
-	show_debug("ratio is ", ratio);
+	LOGD("ratio is %f", ratio);
 	tmp_size = Size((int)(image.size().width * ratio), (int)(image.size().height * ratio));
 	dest_image = Mat(tmp_size, CV_32S);
 	resize(image, dest_image, tmp_size);
 
-	show_debug("start to detectFace ", "");
+	LOGD("start to detectFace");
 	start = clock();
 
     result = detectFace( dest_image, config_path);
 
 	clt = clock() - start;
-	show_debug("detectFace cost time ", (double)clt/CLOCKS_PER_SEC);
-	show_debug("detectFace Y is ", result);
-	show_debug("detectFace end", "");
+	LOGD("detectFace cost time %g", (double)clt/CLOCKS_PER_SEC);
+	LOGD("detectFace Y is %d", result);
+	LOGD("detectFace end");
 
 	if ( result == -1 )
 	{
-		show_debug("start to detectCahracter ", "");
+		LOGD("start to detectCahracter");
 		start = clock();
 
     	result = detectCharacter( dest_image );
 
 		clt = clock() - start;
-		show_debug("detectCharacter cost time ", (double)clt/CLOCKS_PER_SEC);
-		show_debug("detectCharacter Y is ", result);
-		show_debug("detectCharacter end", "");
+		LOGD("detectCharacter cost time %g", (double)clt/CLOCKS_PER_SEC);
+		LOGD("detectCharacter Y is %d", result);
+		LOGD("detectCharacter end");
 	}
 
 	result = result == -1 ? -1 : (int)((float)result / ratio);
 
-	show_debug("the origin result is ", result);
+	LOGD("the origin result is %d", result);
 	
 	ratio_width = (float)dest_width / image.size().width;
 	ratio_height = (float)dest_height / image.size().height;
 
-	show_debug("ratio of width ", ratio_width);
-	show_debug("ratio of height ", ratio_height);
+	LOGD("ratio of width %f", ratio_width);
+	LOGD("ratio of height %f", ratio_height);
 
 	if (ratio_width > ratio_height)
 	{
@@ -304,13 +249,13 @@ int test(int argc, char** argv)
 
 	result = result == -1 ? -1 : (int)((float)result * ratio);
 
-	show_debug("ratio is ", ratio);
+	LOGD("ratio is %f", ratio);
 	tmp_size = Size((int)(image.size().width * ratio), (int)(image.size().height * ratio));
 	dest_image = Mat(tmp_size, CV_32S);
 	resize(image, dest_image, tmp_size);
 
-	show_debug("width of resize image ", dest_image.size().width);
-	show_debug("height of resize image ", dest_image.size().height);
+	LOGD("width of resize image %d", dest_image.size().width);
+	LOGD("height of resize image %d", dest_image.size().height);
 
 	if (ratio_width > ratio_height) //原图片 宽度小于高度
 	{
@@ -332,12 +277,13 @@ int test(int argc, char** argv)
 		clip_right = clip_left;
 	}
 
-	show_debug("clip_top ", clip_top);
-	show_debug("clip_bottom ", clip_bottom);
-	show_debug("clip_left ", clip_left);
-	show_debug("clip_right ", clip_right);
+	LOGD("clip_top %d", clip_top);
+	LOGD("clip_bottom %d", clip_bottom);
+	LOGD("clip_left %d", clip_left);
+	LOGD("clip_right %d", clip_right);
 	dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
 
-	imwrite(dest_path, dest_image);
-	show_debug("write to file ", dest_path);
+    return 0;
+
 }
+

@@ -1,7 +1,6 @@
+#include "common.h"  
 #include "jtclip.h"
 #include "tclip.h"
-
-#include <android/log.h>
 
 #include <assert.h>
 #include <jni.h>
@@ -19,13 +18,6 @@
 #include "opencv2/nonfree/nonfree.hpp"
 
 #include <android/bitmap.h>
-#include "cv.h"  
-
-#define  LOG_TAG    "TClip" 
-
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__) 
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__) 
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__) 
 
 using namespace cv;
 using namespace std;
@@ -76,7 +68,9 @@ JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
         
         AndroidBitmap_unlockPixels(env, bitmap_src);
 
-        detectFace(img, "/sdcard/haarcascade_frontalface_alt.xml");
+        LOGD("detectFace start");
+        int ret = detectFace(img, "/sdcard/haarcascade_frontalface_alt.xml");
+        LOGD("detectFace done r=%d", ret);
 
         return;
     } catch(cv::Exception e) {

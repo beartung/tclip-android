@@ -1,10 +1,8 @@
-#include <jni.h>
+#ifndef __TCLIP__
+#define __TCLIP__
 
 #include "cv.h"  
 #include "opencv2/core/core.hpp"
-
-#ifndef __TCLIP__
-#define __TCLIP__
 
 #ifdef __cplusplus
 extern "C" {
