@@ -174,7 +174,7 @@ int clip(Mat image, Mat dest_image, int dest_width, int dest_height)
 	int result = 0;
 	int param;
 
-	LOGD("start to read image ", "");
+	LOGD("start to read image ");
 	start = clock();
 
 	LOGD("start to resize");
