@@ -77,17 +77,22 @@ void nBitmapToMat2 (JNIEnv * env, jobject bitmap, Mat & dst, bool needUnPremulti
         }
 }
 
-void nMatToBitmap2 (JNIEnv * env, Mat & src, jobject bitmap, bool needPremultiplyAlpha)
+jobject nMatToBitmap2 (JNIEnv * env, Mat & src, bool needPremultiplyAlpha, jobject bitmap_config)
 {
+
+    jclass java_bitmap_class = (jclass)env->FindClass("android/graphics/Bitmap");
+    jmethodID mid = env->GetStaticMethodID(java_bitmap_class,
+            "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
+
+    jobject bitmap = env->CallStaticObjectMethod(java_bitmap_class,
+                        mid, src.size().width, src.size().height, bitmap_config);
+
     AndroidBitmapInfo  info;
     void*              pixels = 0;
 
     try {
             LOGD("nMatToBitmap");
             CV_Assert( AndroidBitmap_getInfo(env, bitmap, &info) >= 0 );
-            CV_Assert( info.format == ANDROID_BITMAP_FORMAT_RGBA_8888 ||
-                       info.format == ANDROID_BITMAP_FORMAT_RGB_565 );
-            //CV_Assert( src.dims == 2 && info.height == (uint32_t)src.rows && info.width == (uint32_t)src.cols );
             CV_Assert( src.type() == CV_8UC1 || src.type() == CV_8UC3 || src.type() == CV_8UC4 );
             CV_Assert( AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0 );
             CV_Assert( pixels );
@@ -125,21 +130,22 @@ void nMatToBitmap2 (JNIEnv * env, Mat & src, jobject bitmap, bool needPremultipl
                 }
             }
             AndroidBitmap_unlockPixels(env, bitmap);
-            return;
+            return bitmap;
         } catch(cv::Exception e) {
             AndroidBitmap_unlockPixels(env, bitmap);
             LOGE("nMatToBitmap catched cv::Exception: %s", e.what());
             jclass je = env->FindClass("org/opencv/core/CvException");
             if(!je) je = env->FindClass("java/lang/Exception");
             env->ThrowNew(je, e.what());
-            return;
+            return bitmap;
         } catch (...) {
             AndroidBitmap_unlockPixels(env, bitmap);
             LOGE("nMatToBitmap catched unknown exception (...)");
             jclass je = env->FindClass("java/lang/Exception");
             env->ThrowNew(je, "Unknown exception in JNI code {nMatToBitmap}");
-            return;
+            return bitmap;
         }
+
 }
 
 /*
@@ -147,8 +153,7 @@ void nMatToBitmap2 (JNIEnv * env, Mat & src, jobject bitmap, bool needPremultipl
  * Method:    crop
  * Signature: ()V;
  */
-JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
-        jobject bitmap_src, jobject bitmap_dst, int width, int height){
+JNIEXPORT static jobject JNICALL crop(JNIEnv * env, jclass cls, jobject bitmap_src, int width, int height){
     LOGI("C: crop");
     Mat img;
     nBitmapToMat2(env, bitmap_src, img, false);
@@ -156,7 +161,14 @@ JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
     Mat dst;
     int ret = clip(img, dst, width, height);
     LOGD("clip done r=%d", ret);
-    nMatToBitmap2(env, dst, bitmap_dst, false);
+    LOGD("dst width=%d, height=%d", dst.size().width, dst.size().height);
+
+    jclass java_bitmap_class = (jclass)env->FindClass("android/graphics/Bitmap");
+    jmethodID mid = env->GetMethodID(java_bitmap_class, "getConfig", "()Landroid/graphics/Bitmap$Config;");
+
+    jobject bitmap_config = env->CallObjectMethod(bitmap_src, mid);
+    jobject bitmap_dst = nMatToBitmap2(env, dst, false, bitmap_config);
+    return bitmap_dst;
 }
 
 #define JNIREG_CLASS "com/opencv/TClip"
@@ -166,7 +178,7 @@ JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
 */
 static JNINativeMethod gMethods[] = {
     { "crop_test", "()V", (void*)crop_test},
-    { "crop", "(Landroid/graphics/Bitmap;Landroid/graphics/Bitmap;II)V", (void*)crop},
+    { "crop", "(Landroid/graphics/Bitmap;II)Landroid/graphics/Bitmap;", (void*)crop},
 };
 
 /*

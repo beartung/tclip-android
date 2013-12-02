@@ -159,7 +159,7 @@ int detectCharacter( Mat img ){
 	return Y * 10;
 }
 
-int clip(Mat image, Mat dest_image, int dest_width, int dest_height)
+int clip(Mat & image, Mat & dest_image, int dest_width, int dest_height)
 {
 	Size tmp_size;
 	float ratio_width = 0;
@@ -282,6 +282,9 @@ int clip(Mat image, Mat dest_image, int dest_width, int dest_height)
 	LOGD("clip_left %d", clip_left);
 	LOGD("clip_right %d", clip_right);
 	dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+
+	LOGD("width of resize image %d", dest_image.size().width);
+	LOGD("height of resize image %d", dest_image.size().height);
 
     return 0;
 

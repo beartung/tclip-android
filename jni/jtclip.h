@@ -19,8 +19,7 @@ JNIEXPORT static void JNICALL crop_test(JNIEnv * env, jclass cls);
  * Method:    crop
  * Signature: ()V;
  */
-JNIEXPORT static void JNICALL crop(JNIEnv * env, jclass cls,
-        jobject bitmap_src, jobject bitmap_dst, int width, int height);
+JNIEXPORT static jobject JNICALL crop(JNIEnv * env, jclass cls, jobject bitmap_src, int width, int height);
 
 #ifdef __cplusplus
 }

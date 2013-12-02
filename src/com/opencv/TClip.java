@@ -15,13 +15,7 @@ public class TClip {
     public static native void crop_test();
 
     //RGB_565 || ARGB_8888
-    public static Bitmap crop(Bitmap src, int width, int height){
-        Bitmap ret = Bitmap.createBitmap(width, height, src.getConfig());
-        crop(src, ret, width, height);
-        return ret;
-    }
-
-    private static native void crop(Bitmap src, Bitmap dst, int width, int height);
+    public static native Bitmap crop(Bitmap src, int width, int height);
 
     static {
         try {
