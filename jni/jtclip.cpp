@@ -18,6 +18,8 @@
 #include "opencv2/nonfree/nonfree.hpp"
 
 #include <android/bitmap.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 using namespace cv;
 using namespace std;
@@ -30,6 +32,23 @@ using namespace std;
 JNIEXPORT static void JNICALL crop_test(JNIEnv * env, jclass cls){
     LOGI("C: crop_test");
 }
+
+/*
+ * Class:     com_opencv_TClip
+ * Method:    init 
+ * Signature: (Landroid/content/res/AssetManager;Ljava/lang/String;)V;
+ */
+JNIEXPORT static void JNICALL init(JNIEnv * env, jclass cls, jobject manager, jobject cascade_config){
+    LOGD("init");
+    AAssetManager * mgr = AAssetManager_fromJava(env, manager);
+    AAssetDir* assetDir = AAssetManager_openDir(mgr, "");
+    jboolean iscopy;
+    const char * filename;
+    while ((filename = AAssetDir_getNextFileName(assetDir)) != NULL) {
+        LOGD("asset %s", filename);
+    }
+}
+
 
 void nBitmapToMat2 (JNIEnv * env, jobject bitmap, Mat & dst, bool needUnPremultiplyAlpha)
 {
@@ -177,8 +196,9 @@ JNIEXPORT static jobject JNICALL crop(JNIEnv * env, jclass cls, jobject bitmap_s
 * Table of methods associated with a single class.
 */
 static JNINativeMethod gMethods[] = {
-    { "crop_test", "()V", (void*)crop_test},
-    { "crop", "(Landroid/graphics/Bitmap;II)Landroid/graphics/Bitmap;", (void*)crop},
+    {"crop_test", "()V", (void*)crop_test},
+    {"init", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V", (void*)init},
+    {"crop", "(Landroid/graphics/Bitmap;II)Landroid/graphics/Bitmap;", (void*)crop},
 };
 
 /*

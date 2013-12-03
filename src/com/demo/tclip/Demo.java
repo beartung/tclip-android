@@ -32,6 +32,9 @@ public class Demo extends Activity {
 
     public void onResume(){
         super.onResume(); 
+
+        TClip.init(getResources().getAssets(), "haarcascade_frontalface_alt.xml");
+
         TClip.crop_test();
 
         Bitmap pic = getPic();
