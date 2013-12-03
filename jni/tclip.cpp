@@ -159,7 +159,7 @@ int detectCharacter( Mat img ){
 	return Y * 10;
 }
 
-int clip(Mat & image, Mat & dest_image, int dest_width, int dest_height)
+int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width, int dest_height)
 {
 	Size tmp_size;
 	float ratio_width = 0;
@@ -170,7 +170,7 @@ int clip(Mat & image, Mat & dest_image, int dest_width, int dest_height)
 	int clip_left = 0;
 	int clip_right = 0;
 	//string config_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
-	string config_path = "/sdcard/haarcascade_frontalface_alt.xml";
+	//string config_path = "/sdcard/haarcascade_frontalface_alt.xml";
 	int result = 0;
 	int param;
 

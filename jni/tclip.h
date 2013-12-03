@@ -10,7 +10,7 @@ extern "C" {
 
 int detectFace(cv::Mat img , std::string face_cascade_name);
 int detectCharacter(cv::Mat img);
-int clip(cv::Mat & image, cv::Mat & dest_image, int dest_width, int dest_height);
+int clip(cv::Mat & image, cv::Mat & dest_image, const char * config_path, int dest_width, int dest_height);
 
 #ifdef __cplusplus
 }
