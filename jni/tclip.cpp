@@ -174,6 +174,7 @@ int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width
 	int result = 0;
 	int param;
 
+	LOGD("using config: %s", config_path);
 	LOGD("start to read image ");
 	start = clock();
 

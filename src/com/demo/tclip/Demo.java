@@ -37,6 +37,8 @@ public class Demo extends FragmentActivity {
     private int[] TITLE_IDS = { R.string.photo_face, R.string.photo_noface };
     private int[] PHOTO_IDS = { R.drawable.a1, R.drawable.b1 };
 
+    private String config;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -48,6 +50,8 @@ public class Demo extends FragmentActivity {
         pager.setAdapter(adapter);
         indicator = (TitlePageIndicator)findViewById(R.id.indicator);
         indicator.setViewPager(pager);
+
+        config = TClip.copyConfig(this, TClip.CONFIG);
 
     }
 
@@ -66,7 +70,7 @@ public class Demo extends FragmentActivity {
         }
 
         public Fragment getItem(int position) {
-            return PhotoPageFragment.newInstance(TClip.CONFIG, PHOTO_IDS[position]);
+            return PhotoPageFragment.newInstance(config, PHOTO_IDS[position]);
         }
 
     };
