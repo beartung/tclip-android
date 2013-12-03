@@ -18,7 +18,9 @@ public class TClip {
 
     private static final String TAG = "TClipJAVA";
 
-    public static String copyConfig(Context context, int config) {
+    public static final String CONFIG = "haarcascade_frontalface_alt.xml";
+
+    public static String copyConfig(Context context, String filename, int config) {
 
         String configPath = "/data/data/" + context.getPackageName() + "/" + filename;
         File configFile = new File(configPath);
@@ -29,7 +31,7 @@ public class TClip {
             OutputStream out = null;
 
             try {
-                in = context.getResources().openRawResource(id);
+                in = context.getResources().openRawResource(config);
                 out = new FileOutputStream(configPath);
 
                 byte[] buffer = new byte[1024];
