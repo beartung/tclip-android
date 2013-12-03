@@ -3,6 +3,8 @@
       package="com.demo.tclip"
       android:versionCode="1"
       android:versionName="1.0">
+    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="false" android:xlargeScreens="true"/>
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19"/>
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name="Demo"
                   android:label="@string/app_name">

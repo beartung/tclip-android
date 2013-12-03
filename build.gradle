@@ -12,10 +12,15 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://github.com/dahlgren/vpi-aar/raw/master"
+    }
 }
 
 dependencies {
     compile files('./libs/opencv-2.4.7.jar')
+    compile 'com.android.support:support-v4:13.0.0'
+    compile 'com.viewpagerindicator:library:2.4.2-SNAPSHOT'
 }
 
 android {

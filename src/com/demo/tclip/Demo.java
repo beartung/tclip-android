@@ -7,50 +7,68 @@ import android.graphics.BitmapFactory;
 
 import android.os.Bundle;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+
 import android.util.Log;
 
 import android.widget.ImageView;
 
 import com.opencv.TClip;
 
+import com.viewpagerindicator.TitlePageIndicator;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class Demo extends Activity {
+import java.lang.CharSequence;
+
+public class Demo extends FragmentActivity {
 
     private static final String TAG = "Demo";
-    private ImageView img;
+    private ViewPager pager;
+    private TitlePageIndicator indicator;
+    private PhotoPageAdapter adapter;
+
+    private int[] TITLE_IDS = { R.string.photo_face, R.string.photo_noface };
+    private int[] PHOTO_IDS = { R.drawable.a1, R.drawable.b1 };
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main);
 
-        img = (ImageView)findViewById(R.id.img);
-    }
-
-    public void onResume(){
-        super.onResume(); 
-
-        Bitmap pic = getPic();
-        Bitmap cropped = TClip.crop("/sdcard/haarcascade_frontalface_alt.xml", pic, 200, 100);
-        img.setImageBitmap(cropped);
+        adapter = new PhotoPageAdapter(getSupportFragmentManager());
+        pager = (ViewPager)findViewById(R.id.pager);
+        pager.setAdapter(adapter);
+        indicator = (TitlePageIndicator)findViewById(R.id.indicator);
+        indicator.setViewPager(pager);
 
     }
 
-    private Bitmap getPic(){
-        File f = new File("/sdcard/a1.jpg"); 
-        //File f = new File("/sdcard/b1.jpg"); 
-        Bitmap ret = null;
-        try {
-            InputStream stream = new FileInputStream(f);
-            ret = BitmapFactory.decodeStream(stream);
-            if (stream != null) stream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    class PhotoPageAdapter extends FragmentPagerAdapter{
+
+        public PhotoPageAdapter(FragmentManager fm) {
+            super(fm);
         }
-        return ret;
-    }
+
+        public int getCount() {
+            return TITLE_IDS.length;
+        }
+
+        public CharSequence getPageTitle(int position) {
+            return getString(TITLE_IDS[position]);
+        }
+
+        public Fragment getItem(int position) {
+            return PhotoPageFragment.newInstance(TClip.CONFIG, PHOTO_IDS[position]);
+        }
+
+    };
 
 }
