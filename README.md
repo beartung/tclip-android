@@ -16,7 +16,7 @@
 * copy config file to app dir
 
     ```
-    TClip.copyConfig(context, TClip.CONFIG, R.raw.haarcascade_frontalface_alt);
+    String configPath = TClip.copyConfig(context, TClip.CONFIG, R.raw.haarcascade_frontalface_alt);
     ```
 
 * get cropped bitmap
