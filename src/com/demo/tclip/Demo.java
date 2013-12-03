@@ -51,7 +51,8 @@ public class Demo extends FragmentActivity {
         indicator = (TitlePageIndicator)findViewById(R.id.indicator);
         indicator.setViewPager(pager);
 
-        config = TClip.copyConfig(this, TClip.CONFIG);
+        config = TClip.copyConfig(this, R.raw.haarcascade_frontalface_alt);
+        Log.d(TAG, "using config path: " + config);
 
     }
 

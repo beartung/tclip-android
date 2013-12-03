@@ -9,7 +9,7 @@
         android:id="@id/img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0.7"
+        android:alpha="0.5"
         />
     <ImageView
         android:id="@id/img1"

@@ -18,13 +18,9 @@ public class TClip {
 
     private static final String TAG = "TClipJAVA";
 
-    public static final String CONFIG = "haarcascade_frontalface_alt.xml";
+    public static String copyConfig(Context context, int config) {
 
-    public static String copyConfig(Context context, String filename) {
-        AssetManager assetManager = context.getAssets();
-
-        File dir = Environment.getDataDirectory();
-        String configPath = dir.getAbsolutePath() + File.pathSeparator + filename;
+        String configPath = "/data/data/" + context.getPackageName() + "/" + filename;
         File configFile = new File(configPath);
         
         if (!configFile.exists()){
@@ -33,7 +29,7 @@ public class TClip {
             OutputStream out = null;
 
             try {
-                in = assetManager.open(filename);
+                in = context.getResources().openRawResource(id);
                 out = new FileOutputStream(configPath);
 
                 byte[] buffer = new byte[1024];
