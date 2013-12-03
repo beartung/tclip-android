@@ -30,7 +30,7 @@ public class PhotoPageFragment extends Fragment{
     private static final String TAG = "PhotoPage";
     private static final int[] IDS = { R.id.img1, R.id.img2, R.id.img3, R.id.img4 };
     private static final int[] WIDTHS = { 300, 200, 150, 400 };
-    private static final int[] HEIGHTS = { 200, 200, 300, 200 };
+    private static final int[] HEIGHTS = { 240, 200, 300, 200 };
     private ImageView img;
     private ImageView[] imgs;
     private Bitmap[] bitmaps;

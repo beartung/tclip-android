@@ -1,3 +1,5 @@
+//from http://code.taobao.org/p/tclip/
+
 #include "common.h"
 
 #include "cv.h"  
@@ -19,7 +21,6 @@
 using namespace cv;
 using namespace std;
 
-bool debug = false;
 clock_t start;
 clock_t clt;
 
@@ -169,8 +170,6 @@ int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width
 	int clip_bottom = 0;
 	int clip_left = 0;
 	int clip_right = 0;
-	//string config_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
-	//string config_path = "/sdcard/haarcascade_frontalface_alt.xml";
 	int result = 0;
 	int param;
 
@@ -196,7 +195,8 @@ int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width
 		clip_bottom = dest_height - dest_image.size().height;
 		clip_left = 0;
 		clip_right = 0;
-		dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+        //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+		dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right);
 		return -1;
 	}
 
@@ -258,7 +258,9 @@ int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width
 	LOGD("width of resize image %d", dest_image.size().width);
 	LOGD("height of resize image %d", dest_image.size().height);
 
-	if (ratio_width > ratio_height) //原图片 宽度小于高度
+    //宽度小于高度
+    //source bitmap width less than height
+	if (ratio_width > ratio_height)
 	{
 		if (result == -1)
 		{
@@ -282,7 +284,8 @@ int clip(Mat & image, Mat & dest_image, const char * config_path, int dest_width
 	LOGD("clip_bottom %d", clip_bottom);
 	LOGD("clip_left %d", clip_left);
 	LOGD("clip_right %d", clip_right);
-	dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+    //Mat& Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+	dest_image.adjustROI(clip_top, clip_bottom, clip_left, clip_right); 
 
 	LOGD("width of resize image %d", dest_image.size().width);
 	LOGD("height of resize image %d", dest_image.size().height);

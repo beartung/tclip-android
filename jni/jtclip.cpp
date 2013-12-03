@@ -46,7 +46,6 @@ void bitmap_to_mat(JNIEnv * env, jobject bitmap, Mat & dst, bool needUnPremultip
     void*              pixels = 0;
 
     try {
-            LOGD("nBitmapToMat");
             CV_Assert(AndroidBitmap_getInfo(env, bitmap, &info) >= 0);
             CV_Assert(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888 ||
                        info.format == ANDROID_BITMAP_FORMAT_RGB_565);
@@ -54,7 +53,6 @@ void bitmap_to_mat(JNIEnv * env, jobject bitmap, Mat & dst, bool needUnPremultip
             CV_Assert(pixels);
             dst.create(info.height, info.width, CV_8UC4);
             if(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888){
-                LOGD("nBitmapToMat: RGBA_8888 -> CV_8UC4");
                 Mat tmp(info.height, info.width, CV_8UC4, pixels);
                 if(needUnPremultiplyAlpha){
                     cvtColor(tmp, dst, COLOR_mRGBA2RGBA);
@@ -63,7 +61,6 @@ void bitmap_to_mat(JNIEnv * env, jobject bitmap, Mat & dst, bool needUnPremultip
                 }
             }else{
                 // info.format == ANDROID_BITMAP_FORMAT_RGB_565
-                LOGD("nBitmapToMat: RGB_565 -> CV_8UC4");
                 Mat tmp(info.height, info.width, CV_8UC2, pixels);
                 cvtColor(tmp, dst, CV_BGR5652RGBA);
             }
@@ -98,7 +95,6 @@ jobject mat_to_bitmap(JNIEnv * env, Mat & src, bool needPremultiplyAlpha, jobjec
     void*              pixels = 0;
 
     try {
-            LOGD("nMatToBitmap");
             CV_Assert(AndroidBitmap_getInfo(env, bitmap, &info) >= 0);
             CV_Assert(src.type() == CV_8UC1 || src.type() == CV_8UC3 || src.type() == CV_8UC4);
             CV_Assert(AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0);
@@ -106,13 +102,10 @@ jobject mat_to_bitmap(JNIEnv * env, Mat & src, bool needPremultiplyAlpha, jobjec
             if(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888){
                 Mat tmp(info.height, info.width, CV_8UC4, pixels);
                 if(src.type() == CV_8UC1){
-                    LOGD("nMatToBitmap: CV_8UC1 -> RGBA_8888");
                     cvtColor(src, tmp, CV_GRAY2RGBA);
                 }else if(src.type() == CV_8UC3){
-                    LOGD("nMatToBitmap: CV_8UC3 -> RGBA_8888");
                     cvtColor(src, tmp, CV_RGB2RGBA);
                 }else if(src.type() == CV_8UC4){
-                    LOGD("nMatToBitmap: CV_8UC4 -> RGBA_8888");
                     if(needPremultiplyAlpha){
                         cvtColor(src, tmp, COLOR_RGBA2mRGBA);
                     }else{
@@ -123,13 +116,10 @@ jobject mat_to_bitmap(JNIEnv * env, Mat & src, bool needPremultiplyAlpha, jobjec
                 // info.format == ANDROID_BITMAP_FORMAT_RGB_565
                 Mat tmp(info.height, info.width, CV_8UC2, pixels);
                 if(src.type() == CV_8UC1){
-                    LOGD("nMatToBitmap: CV_8UC1 -> RGB_565");
                     cvtColor(src, tmp, CV_GRAY2BGR565);
                 }else if(src.type() == CV_8UC3){
-                    LOGD("nMatToBitmap: CV_8UC3 -> RGB_565");
                     cvtColor(src, tmp, CV_RGB2BGR565);
                 }else if(src.type() == CV_8UC4){
-                    LOGD("nMatToBitmap: CV_8UC4 -> RGB_565");
                     cvtColor(src, tmp, CV_RGBA2BGR565);
                 }
             }
@@ -159,28 +149,34 @@ jobject mat_to_bitmap(JNIEnv * env, Mat & src, bool needPremultiplyAlpha, jobjec
  */
 JNIEXPORT static jobject JNICALL crop(JNIEnv * env, jclass cls,
                     jobject config, jobject bitmap_src, int width, int height){
-    LOGI("C: crop");
+
+    //first convert Bitmap to Mat
     Mat img;
     bitmap_to_mat(env, bitmap_src, img, false);
-    LOGD("clip start");
+    //LOGD("clip start");
+
+    //do clipping & get cropped Mat
     Mat dst;
     char * config_str = jstring_to_str(env, config);
     int ret = clip(img, dst, config_str, width, height);
-    LOGD("clip done r=%d", ret);
-    LOGD("dst width=%d, height=%d", dst.size().width, dst.size().height);
+    //LOGD("clip mat width=%d, height=%d", dst.size().width, dst.size().height);
 
+    //get source bitmap's config
     jclass java_bitmap_class = (jclass)env->FindClass("android/graphics/Bitmap");
     jmethodID mid = env->GetMethodID(java_bitmap_class, "getConfig", "()Landroid/graphics/Bitmap$Config;");
-
     jobject bitmap_config = env->CallObjectMethod(bitmap_src, mid);
+
+    //create new Bitmap with cropped Mat
     jobject bitmap_dst = mat_to_bitmap(env, dst, false, bitmap_config);
     
+    //clean up
     if (config_str){
         delete [] config_str;
     }
     return bitmap_dst;
 }
 
+//Java Class
 #define JNIREG_CLASS "com/opencv/TClip"
 
 /**
