@@ -6,6 +6,8 @@
 
 ![demo screenshots](https://raw.github.com/beartung/tclip-android/master/screenshots/s1.png "Demo Screenshots")
 
+* recommend iOS project: [https://github.com/croath/UIImageView-BetterFace](https://github.com/croath/UIImageView-BetterFace)
+
 #Features
 
 * using OpenCV to detect faces firstly, if have faces, won't cut faces off
