@@ -10,7 +10,7 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/features2d/features2d.hpp"
-#include "opencv2/nonfree/nonfree.hpp"
+//#include "opencv2/nonfree/nonfree.hpp"
 
 #include <unistd.h>
 #include <iostream>
@@ -82,9 +82,9 @@ int detectCharacter( Mat img ){
 
 	vector<KeyPoint> keypoints;
 
-	cv::initModule_nonfree();//使用SIFT/SURF create之前，必须先initModule_<modulename>(); 
+	//cv::initModule_nonfree();//使用SIFT/SURF create之前，必须先initModule_<modulename>(); 
 
-	Ptr<FeatureDetector> detector = FeatureDetector::create( "SURF" );
+	Ptr<FeatureDetector> detector = FeatureDetector::create( "FAST" );//使用FAST角点检测
 
 	if( detector.empty())
 	{
