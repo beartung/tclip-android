@@ -25,3 +25,10 @@
     //config: /data/data/com.demo.tclip.debug/haarcascade_frontalface_alt.xml
     Bitmap ret = TClip.crop(configPath, sourceBitmap, width, height);
     ```
+
+#Build
+
+* download OpenCV & unzip to /home/user/opencv-android-sdk
+* export OPENCV_PACKAGE_DIR="/home/user/opencv-android-sdk"
+* libnonfree.so & libopencv_java.so from [beartung/nonfree-opencv-android](https://github.com/beartung/nonfree-opencv-android)
+* cd jni && ndk-build
