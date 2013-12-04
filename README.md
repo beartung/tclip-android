@@ -2,11 +2,12 @@
 
 ### based on [http://code.taobao.org/p/tclip/](http://code.taobao.org/p/tclip/)
 
+#### recommend iOS version: [https://github.com/croath/UIImageView-BetterFace](https://github.com/croath/UIImageView-BetterFace)
+
 #Demo Screenshots
 
 ![demo screenshots](https://raw.github.com/beartung/tclip-android/master/screenshots/s1.png "Demo Screenshots")
 
-* recommend iOS project: [https://github.com/croath/UIImageView-BetterFace](https://github.com/croath/UIImageView-BetterFace)
 
 #Features
 
